@@ -1359,7 +1359,7 @@
       'background: #111; color: white; padding: 10px; font-size: 20px;',
       'background: #f8f8f6; color: #111; padding: 10px;');
   </script>
-    <script src="products.js">    // ============ PRODUCT CATALOG ============
+      // ============ PRODUCT CATALOG ============
     function renderProducts(productsToShow) {
       const grid = document.getElementById('productGrid');
       if (!grid) return;
@@ -1394,6 +1394,7 @@
         window.products=[{id:1,name:"Oversized Hoodie",category:"Outerwear",price:"$590",image:"https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600",badge:"Best Seller"},{id:2,name:"Premium Tee",category:"Tops",price:"$320",image:"https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600",badge:"New"},{id:3,name:"Minimal Jacket",category:"Jackets",price:"$1,290",image:"https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600",badge:""},{id:4,name:"Luxury Cargos",category:"Bottoms",price:"$780",image:"https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600",badge:"Limited"}];
         renderProducts(window.products);
       }
-    },600);</script>
+    },600);
+    <script src="products.js"></script>
 </body>
 </html>
