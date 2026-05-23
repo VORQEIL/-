@@ -1025,66 +1025,8 @@
       <h2 class="section-title">Curated Essentials</h2>
       <p class="section-description">Each piece designed with meticulous attention to detail, crafted for the modern visionary.</p>
     </div>
-    <div class="product-grid">
-      <div class="product-card">
-        <div class="product-image-wrapper">
-          <div class="product-image" style="background: linear-gradient(135deg, #d5d5d3, #bfbfbd);"></div>
-          <div class="product-overlay">
-            <button class="quick-view-btn">Quick View</button>
-          </div>
-        </div>
-        <div class="product-info">
-          <p class="product-category">Outerwear</p>
-          <h3 class="product-name">Oversized Hoodie</h3>
-          <p class="product-price">$590 USD</p>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-      
-      <div class="product-card">
-        <div class="product-image-wrapper">
-          <div class="product-image" style="background: linear-gradient(135deg, #c8c8c6, #b0b0ae);"></div>
-          <div class="product-overlay">
-            <button class="quick-view-btn">Quick View</button>
-          </div>
-        </div>
-        <div class="product-info">
-          <p class="product-category">Tops</p>
-          <h3 class="product-name">Premium Tee</h3>
-          <p class="product-price">$320 USD</p>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-      
-      <div class="product-card">
-        <div class="product-image-wrapper">
-          <div class="product-image" style="background: linear-gradient(135deg, #bbb, #999);"></div>
-          <div class="product-overlay">
-            <button class="quick-view-btn">Quick View</button>
-          </div>
-        </div>
-        <div class="product-info">
-          <p class="product-category">Jackets</p>
-          <h3 class="product-name">Minimal Jacket</h3>
-          <p class="product-price">$1,290 USD</p>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
-      
-      <div class="product-card">
-        <div class="product-image-wrapper">
-          <div class="product-image" style="background: linear-gradient(135deg, #aaa, #888);"></div>
-          <div class="product-overlay">
-            <button class="quick-view-btn">Quick View</button>
-          </div>
-        </div>
-        <div class="product-info">
-          <p class="product-category">Bottoms</p>
-          <h3 class="product-name">Luxury Cargos</h3>
-          <p class="product-price">$780 USD</p>
-          <button class="add-to-cart">Add to Cart</button>
-        </div>
-      </div>
+        <div class="product-grid" id="productGrid">
+      <p style="text-align:center; grid-column:1/-1; padding:3rem;">Loading products...</p>
     </div>
   </section>
 
@@ -1417,5 +1359,41 @@
       'background: #111; color: white; padding: 10px; font-size: 20px;',
       'background: #f8f8f6; color: #111; padding: 10px;');
   </script>
+    <script src="products.js">    // ============ PRODUCT CATALOG ============
+    function renderProducts(productsToShow) {
+      const grid = document.getElementById('productGrid');
+      if (!grid) return;
+      const products = productsToShow || window.products || [];
+      if (products.length === 0) {
+        grid.innerHTML = '<p style="text-align:center;padding:3rem;">No products found.</p>';
+        return;
+      }
+      grid.innerHTML = products.map(p => `
+        <div class="product-card">
+          <div class="product-image-wrapper">
+            <img src="${p.image}" class="product-image" alt="${p.name}" onerror="this.style.background='linear-gradient(135deg, #d5d5d3, #bfbfbd)';this.src='';">
+            ${p.badge ? `<span style="position:absolute;top:1rem;left:1rem;background:var(--deep-black);color:white;padding:0.4rem 1rem;font-size:0.6rem;letter-spacing:2px;text-transform:uppercase;z-index:2;">${p.badge}</span>` : ''}
+            <div class="product-overlay"><button class="quick-view-btn">Quick View</button></div>
+          </div>
+          <div class="product-info">
+            <p class="product-category">${p.category}</p>
+            <h3 class="product-name">${p.name}</h3>
+            <p class="product-price">${p.price} USD</p>
+            <button class="add-to-cart">Add to Cart</button>
+          </div>
+        </div>
+      `).join('');
+      document.querySelectorAll('.product-card,.quick-view-btn,.add-to-cart').forEach(el=>{
+        el.addEventListener('mouseenter',()=>cursor.classList.add('hover'));
+        el.addEventListener('mouseleave',()=>cursor.classList.remove('hover'));
+      });
+    }
+    setTimeout(()=>{
+      if(window.products&&window.products.length>0){renderProducts(window.products)}
+      else{
+        window.products=[{id:1,name:"Oversized Hoodie",category:"Outerwear",price:"$590",image:"https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=600",badge:"Best Seller"},{id:2,name:"Premium Tee",category:"Tops",price:"$320",image:"https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?w=600",badge:"New"},{id:3,name:"Minimal Jacket",category:"Jackets",price:"$1,290",image:"https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600",badge:""},{id:4,name:"Luxury Cargos",category:"Bottoms",price:"$780",image:"https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600",badge:"Limited"}];
+        renderProducts(window.products);
+      }
+    },600);</script>
 </body>
 </html>
