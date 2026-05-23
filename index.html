@@ -1,37 +1,479 @@
-const products = [
-  {
-    id: 1,
-    name: "Oversized Hoodie",
-    category: "Outerwear",
-    price: "$999",  // ← CHANGE THIS TO WHATEVER YOU WANT!
-    image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600",
-    badge: "Best Seller"
-  },
-  {
-    id: 2,
-    name: "Premium Tee",
-    category: "Tops",
-    price: "$450",
-    image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600",
-    badge: "New"
-  },
-  {
-    id: 3,
-    name: "Minimal Jacket",
-    category: "Jackets",
-    price: "$1,500",
-    image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600",
-    badge: ""
-  },
-  {
-    id: 4,
-    name: "Luxury Cargos",
-    category: "Bottoms",
-    price: "$890",
-    image: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600",
-    badge: "Limited"
-  }
-];
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>VORQEIL | Luxury Streetwear Engineered for the Future</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Inter:wght@200;300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+  
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-// ⚠️ THIS LINE IS CRUCIAL - DON'T DELETE IT!
-window.products = products;
+    :root {
+      --pure-white: #ffffff;
+      --soft-ivory: #f8f8f6;
+      --deep-black: #111111;
+    }
+
+    html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--pure-white);
+      color: var(--deep-black);
+      line-height: 1.5;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--soft-ivory); }
+    ::-webkit-scrollbar-thumb { background: #b0b0b0; border-radius: 10px; }
+
+    /* LOADING SCREEN */
+    .loading-screen {
+      position: fixed; inset: 0; background: var(--pure-white);
+      z-index: 10000; display: flex; align-items: center; justify-content: center;
+      transition: opacity 0.6s ease, visibility 0.6s ease;
+    }
+    .loading-screen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loading-logo {
+      font-family: 'Cinzel', serif; font-size: 3rem;
+      letter-spacing: 12px; animation: breathe 2s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%, 100% { opacity: 0.3; transform: scale(0.98); }
+      50% { opacity: 1; transform: scale(1); }
+    }
+
+    /* SCROLL PROGRESS */
+    .scroll-progress {
+      position: fixed; top: 0; left: 0; height: 3px;
+      background: var(--deep-black); z-index: 9998;
+      width: 0%; transition: width 0.1s linear;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+      padding: 1.8rem 5vw; display: flex; align-items: center;
+      justify-content: space-between; transition: all 0.5s ease;
+      background: transparent;
+    }
+    .navbar.scrolled {
+      background: rgba(255,255,255,0.75); backdrop-filter: blur(30px);
+      box-shadow: 0 2px 30px rgba(0,0,0,0.04); padding: 1.2rem 5vw;
+    }
+    .logo {
+      font-family: 'Cinzel', serif; font-size: 1.6rem;
+      font-weight: 600; letter-spacing: 6px; text-transform: uppercase;
+    }
+    .nav-links { display: flex; gap: 3rem; list-style: none; }
+    .nav-links a {
+      text-decoration: none; color: var(--deep-black);
+      font-size: 0.8rem; letter-spacing: 2.5px; text-transform: uppercase;
+      opacity: 0.8; transition: opacity 0.3s;
+    }
+    .nav-links a:hover { opacity: 1; }
+    .nav-actions { display: flex; gap: 2rem; font-size: 1.1rem; align-items: center; }
+    .cart-count {
+      background: var(--deep-black); color: white; font-size: 0.6rem;
+      width: 18px; height: 18px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      margin-left: -5px; font-weight: 600;
+    }
+    .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+    .hamburger span { width: 24px; height: 2px; background: var(--deep-black); transition: 0.4s; }
+
+    /* HERO */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center;
+      justify-content: center; text-align: center;
+      background: linear-gradient(135deg, #fafaf8, #f0f0ee, #f8f8f6);
+      padding: 0 2rem;
+    }
+    .hero-content { max-width: 1000px; }
+    .hero-eyebrow { font-size: 0.7rem; letter-spacing: 8px; text-transform: uppercase; color: #666; margin-bottom: 2rem; }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 8vw, 7rem); font-weight: 600;
+      letter-spacing: -1px; line-height: 1.05; margin-bottom: 1.5rem;
+    }
+    .hero h1 em { font-style: italic; color: #333; }
+    .hero-subtitle { font-size: 1.1rem; letter-spacing: 3px; color: #555; margin-bottom: 3rem; font-weight: 300; }
+    .btn-group { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      padding: 1.2rem 3rem; font-size: 0.8rem; letter-spacing: 3px;
+      text-transform: uppercase; cursor: pointer; border: none; font-weight: 500;
+      transition: all 0.5s ease;
+    }
+    .btn-primary { background: var(--deep-black); color: white; }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+    .btn-outline { background: transparent; color: var(--deep-black); border: 1.5px solid var(--deep-black); }
+    .btn-outline:hover { background: var(--deep-black); color: white; transform: translateY(-3px); }
+
+    /* SECTIONS */
+    .section { padding: 8rem 5vw; }
+    .section-header { text-align: center; margin-bottom: 4rem; }
+    .section-eyebrow { font-size: 0.7rem; letter-spacing: 6px; text-transform: uppercase; color: #888; margin-bottom: 1rem; }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 600;
+    }
+    .section-description { font-size: 1.1rem; color: #666; max-width: 600px; margin: 1.5rem auto 0; }
+
+    /* ============ PRODUCT GRID (AUTO-GENERATED) ============ */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2.5rem;
+    }
+    .product-card {
+      background: white; border-radius: 4px; overflow: hidden;
+      transition: all 0.6s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+    }
+    .product-card:hover { transform: translateY(-12px); box-shadow: 0 30px 60px rgba(0,0,0,0.08); }
+    .product-image-wrapper {
+      position: relative; overflow: hidden; aspect-ratio: 3/4;
+      background: linear-gradient(135deg, #e8e8e6, #d5d5d3);
+    }
+    .product-image {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.8s ease;
+    }
+    .product-card:hover .product-image { transform: scale(1.08); }
+    .product-badge {
+      position: absolute; top: 1rem; left: 1rem;
+      background: var(--deep-black); color: white;
+      padding: 0.4rem 1rem; font-size: 0.6rem;
+      letter-spacing: 2px; text-transform: uppercase;
+    }
+    .product-overlay {
+      position: absolute; inset: 0;
+      background: rgba(0,0,0,0.15);
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity 0.4s ease;
+    }
+    .product-card:hover .product-overlay { opacity: 1; }
+    .quick-view-btn {
+      padding: 0.8rem 2rem; background: white;
+      border: none; font-size: 0.7rem; letter-spacing: 2px;
+      text-transform: uppercase; cursor: pointer;
+      transform: translateY(20px); transition: transform 0.4s ease;
+    }
+    .product-card:hover .quick-view-btn { transform: translateY(0); }
+    .product-info { padding: 1.8rem; }
+    .product-category { font-size: 0.65rem; letter-spacing: 3px; text-transform: uppercase; color: #999; margin-bottom: 0.5rem; }
+    .product-name { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 600; }
+    .product-price { font-size: 1rem; color: #555; margin-top: 0.5rem; }
+
+    /* SEARCH & FILTERS */
+    .search-container { display: flex; justify-content: center; margin-bottom: 2rem; }
+    .search-input {
+      padding: 1rem 2rem; width: 100%; max-width: 500px;
+      border: 1px solid #ddd; font-size: 0.9rem;
+      letter-spacing: 1px; outline: none;
+    }
+    .search-input:focus { border-color: var(--deep-black); }
+    .category-filters { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; margin-bottom: 3rem; }
+    .filter-btn {
+      padding: 0.6rem 1.5rem; background: transparent;
+      border: 1px solid #ddd; font-size: 0.7rem;
+      letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; transition: all 0.3s ease;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--deep-black); color: white; border-color: var(--deep-black);
+    }
+
+    /* FEATURES */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+    }
+    .feature-card {
+      background: rgba(255,255,255,0.7); backdrop-filter: blur(30px);
+      border: 1px solid rgba(0,0,0,0.05); padding: 3rem 2rem;
+      text-align: center; transition: all 0.5s ease;
+    }
+    .feature-card:hover { transform: translateY(-10px); box-shadow: 0 30px 60px rgba(0,0,0,0.06); }
+    .feature-icon { font-size: 2.5rem; margin-bottom: 1.5rem; }
+    .feature-title { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 1rem; }
+    .feature-description { font-size: 0.9rem; color: #777; line-height: 1.6; }
+
+    /* FOOTER */
+    .footer {
+      background: var(--soft-ivory); padding: 6rem 5vw 3rem;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr;
+      gap: 4rem; margin-bottom: 4rem;
+    }
+    .footer-logo { font-family: 'Cinzel', serif; font-size: 2rem; letter-spacing: 8px; margin-bottom: 1.5rem; }
+    .footer-description { font-size: 0.9rem; color: #777; }
+    .footer-title { font-size: 0.7rem; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 1.5rem; font-weight: 600; }
+    .footer-links { list-style: none; }
+    .footer-links li { margin-bottom: 0.8rem; }
+    .footer-links a { text-decoration: none; color: #666; font-size: 0.9rem; }
+    .footer-links a:hover { color: var(--deep-black); }
+    .footer-bottom {
+      border-top: 1px solid rgba(0,0,0,0.06);
+      padding-top: 2rem; display: flex;
+      justify-content: space-between; font-size: 0.8rem; color: #999;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1024px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+    }
+    @media (max-width: 768px) {
+      .section { padding: 5rem 5vw; }
+      .product-grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
+      .footer-grid { grid-template-columns: 1fr; gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LOADING -->
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-logo">VORQEIL</div>
+  </div>
+
+  <!-- SCROLL PROGRESS -->
+  <div class="scroll-progress" id="scrollProgress"></div>
+
+  <!-- NAVBAR -->
+  <nav class="navbar" id="navbar">
+    <div class="logo">VORQEIL</div>
+    <ul class="nav-links">
+      <li><a href="#home">Home</a></li>
+      <li><a href="#collection">Collection</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <div class="nav-actions">
+      <span>🔍</span>
+      <span>🛒 <span class="cart-count" id="cartCount">0</span></span>
+      <div class="hamburger" id="hamburger">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <div class="hero-content">
+      <p class="hero-eyebrow">Autumn Winter 2026</p>
+      <h1>WE DON'T FOLLOW<br><em>ERAS.</em><br>WE CREATE THEM.</h1>
+      <p class="hero-subtitle">Luxury streetwear engineered for the future.</p>
+      <div class="btn-group">
+        <button class="btn btn-primary" onclick="document.getElementById('collection').scrollIntoView({behavior:'smooth'})">Explore Collection</button>
+        <button class="btn btn-outline">New Arrivals</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🛍️ COLLECTION - AUTO-GENERATED FROM products.js -->
+  <section class="section" id="collection">
+    <div class="section-header">
+      <p class="section-eyebrow">The Collection</p>
+      <h2 class="section-title">Curated Essentials</h2>
+      <p class="section-description">Each piece designed with meticulous attention to detail.</p>
+    </div>
+
+    <!-- SEARCH -->
+    <div class="search-container">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search products...">
+    </div>
+
+    <!-- CATEGORY FILTERS (Auto-generated) -->
+    <div class="category-filters" id="categoryFilters"></div>
+
+    <!-- 🔥 PRODUCTS WILL APPEAR HERE AUTOMATICALLY -->
+    <div class="product-grid" id="productGrid">
+      <p style="text-align:center; grid-column:1/-1; padding:3rem;">Loading products...</p>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="section" style="background: var(--soft-ivory);" id="about">
+    <div class="section-header">
+      <p class="section-eyebrow">The VORQEIL Experience</p>
+      <h2 class="section-title">Beyond Luxury</h2>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🌍</div>
+        <h3 class="feature-title">Worldwide Shipping</h3>
+        <p class="feature-description">Complimentary express delivery to over 150 countries.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✨</div>
+        <h3 class="feature-title">Premium Fabrics</h3>
+        <p class="feature-description">Sourced from the finest mills in Italy and Japan.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌱</div>
+        <h3 class="feature-title">Sustainable Production</h3>
+        <p class="feature-description">Carbon-neutral manufacturing at every step.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔥</div>
+        <h3 class="feature-title">Limited Drops</h3>
+        <p class="feature-description">Exclusive quantities, never to be reproduced.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer" id="contact">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">VORQEIL</div>
+        <p class="footer-description">Luxury streetwear engineered for the future.</p>
+      </div>
+      <div>
+        <h4 class="footer-title">Collection</h4>
+        <ul class="footer-links">
+          <li><a href="#">New Arrivals</a></li>
+          <li><a href="#">Outerwear</a></li>
+          <li><a href="#">Tops</a></li>
+          <li><a href="#">Accessories</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Company</h4>
+        <ul class="footer-links">
+          <li><a href="#">About</a></li>
+          <li><a href="#">Journal</a></li>
+          <li><a href="#">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-title">Connect</h4>
+        <ul class="footer-links">
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Twitter / X</a></li>
+          <li><a href="#">TikTok</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 VORQEIL. All rights reserved.</span>
+      <span>Privacy Policy · Terms of Service</span>
+    </div>
+  </footer>
+
+  <!-- ============ SCRIPTS ============ -->
+  <script src="products.js"></script>
+  <script>
+    // ============ LOADING ============
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loadingScreen').classList.add('hidden');
+      }, 1200);
+    });
+
+    // ============ SCROLL PROGRESS ============
+    window.addEventListener('scroll', () => {
+      const scrolled = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+      document.getElementById('scrollProgress').style.width = scrolled + '%';
+    });
+
+    // ============ NAVBAR SCROLL ============
+    window.addEventListener('scroll', () => {
+      document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+    });
+
+    // ============ CART ============
+    let cartCount = 0;
+    function updateCartDisplay() {
+      document.getElementById('cartCount').textContent = cartCount;
+    }
+
+    // ============ 🔥 RENDER PRODUCTS FROM products.js ============
+    function renderProducts(productsToShow) {
+      const grid = document.getElementById('productGrid');
+      const products = productsToShow || window.products || [];
+      
+      if (products.length === 0) {
+        grid.innerHTML = '<p style="text-align:center; grid-column:1/-1; padding:3rem;">No products found. Add products to products.js</p>';
+        return;
+      }
+      
+      grid.innerHTML = products.map(p => `
+        <div class="product-card">
+          <div class="product-image-wrapper">
+            <img src="${p.image}" class="product-image" alt="${p.name}" 
+                 onerror="this.style.background='linear-gradient(135deg, #ddd, #bbb)'; this.src='';">
+            ${p.badge ? `<span class="product-badge">${p.badge}</span>` : ''}
+            <div class="product-overlay">
+              <button class="quick-view-btn">Quick View</button>
+            </div>
+          </div>
+          <div class="product-info">
+            <p class="product-category">${p.category}</p>
+            <h3 class="product-name">${p.name}</h3>
+            <p class="product-price">${p.price} USD</p>
+          </div>
+        </div>
+      `).join('');
+      
+      updateCategoryFilters(products);
+    }
+
+    // ============ UPDATE CATEGORY FILTERS ============
+    function updateCategoryFilters(products) {
+      const categories = ['all', ...new Set(products.map(p => p.category))];
+      const filterContainer = document.getElementById('categoryFilters');
+      
+      filterContainer.innerHTML = categories.map(cat => 
+        `<button class="filter-btn ${cat === 'all' ? 'active' : ''}" data-category="${cat}">${cat}</button>`
+      ).join('');
+      
+      filterContainer.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          filterContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          const cat = btn.dataset.category;
+          const filtered = cat === 'all' ? window.products : window.products.filter(p => p.category === cat);
+          renderProducts(filtered);
+        });
+      });
+    }
+
+    // ============ SEARCH ============
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      const filtered = (window.products || []).filter(p => 
+        p.name.toLowerCase().includes(query) || p.category.toLowerCase().includes(query)
+      );
+      renderProducts(filtered);
+    });
+
+    // ============ INITIAL LOAD ============
+    // Wait for products.js to load, then render
+    setTimeout(() => {
+      if (window.products && window.products.length > 0) {
+        console.log('✅ Loaded', window.products.length, 'products from products.js');
+        renderProducts(window.products);
+      } else {
+        console.warn('⚠️ products.js not loaded or empty. Using fallback.');
+        window.products = [
+          { id: 1, name: "Oversized Hoodie", category: "Outerwear", price: "$590", image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600", badge: "Best Seller" },
+          { id: 2, name: "Premium Tee", category: "Tops", price: "$320", image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600", badge: "New" },
+          { id: 3, name: "Minimal Jacket", category: "Jackets", price: "$1,290", image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600", badge: "" },
+          { id: 4, name: "Luxury Cargos", category: "Bottoms", price: "$780", image: "https://images.unsplash.com/photo-1624378439575-d8705ad7ae80?w=600", badge: "Limited" }
+        ];
+        renderProducts(window.products);
+      }
+    }, 300);
+  </script>
+</body>
+</html>
