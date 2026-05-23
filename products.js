@@ -11,7 +11,7 @@ const products = [
     id: 1,
     name: "Oversized Hoodie",
     category: "Outerwear",
-    price: "$590",
+    price: "$59",
     image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=600", // Replace with your image URL
     badge: "Best Seller"
   },
